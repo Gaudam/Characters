@@ -1,0 +1,662 @@
+<!DOCTYPE-html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Sheet</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        .container-shadow {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+        }
+        .btn-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.12);
+        }
+        .bg-card-dark {
+            background-color: #1f1f1f;
+        }
+        .bg-darker {
+            background-color: #2c2c2c;
+        }
+        .text-input-dark {
+            background-color: #2c2c2c;
+            color: #e0e0e0;
+            border-color: #444;
+        }
+        .card-text-container {
+            max-height: 10rem;
+            overflow-y: auto;
+        }
+        /* Custom styles for stable grid layout */
+        .character-grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            align-items: start;
+        }
+        .character-card-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        .character-card-wrapper > div {
+            flex: 1;
+        }
+    </style>
+</head>
+<body class="p-4">
+
+<div class="bg-card-dark rounded-xl container-shadow w-full max-w-4xl p-8 space-y-8 relative mx-auto">
+    <h1 class="text-4xl font-bold text-center text-gray-100">Character Sheet Creator</h1>
+    <p class="text-center text-gray-400">Save, export, and import your characters seamlessly.</p>
+    
+    <div id="user-info" class="text-sm text-center text-gray-500"></div>
+
+    <hr class="border-t border-gray-700">
+
+    <!-- Character Form -->
+    <div id="character-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="col-span-1 md:col-span-2">
+            <h2 class="text-2xl font-semibold text-gray-200 mb-4">Character Details</h2>
+        </div>
+
+        <div>
+            <label for="char-name" class="block text-sm font-medium text-gray-400">Full Name</label>
+            <input type="text" id="char-name" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="e.g., Elara Vex">
+        </div>
+        <div>
+            <label for="char-family-name" class="block text-sm font-medium text-gray-400">Family Name</label>
+            <input type="text" id="char-family-name" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="e.g., Stormrage">
+        </div>
+        <div>
+            <label for="char-age" class="block text-sm font-medium text-gray-400">Age</label>
+            <input type="number" id="char-age" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2">
+        </div>
+        <div>
+            <label for="char-occupation" class="block text-sm font-medium text-gray-400">Occupation</label>
+            <input type="text" id="char-occupation" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="e.g., Royal Guard">
+        </div>
+        <div>
+            <label for="char-race" class="block text-sm font-medium text-gray-400">Race</label>
+            <input type="text" id="char-race" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="e.g., High Elf">
+        </div>
+        <div>
+            <label for="char-subrace" class="block text-sm font-medium text-gray-400">Subrace</label>
+            <input type="text" id="char-subrace" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="e.g., Sun Elf">
+        </div>
+        <div>
+            <label for="char-class" class="block text-sm font-medium text-gray-400">Class</label>
+            <input type="text" id="char-class" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="e.g., Paladin">
+        </div>
+        <div>
+            <label for="char-subclass" class="block text-sm font-medium text-gray-400">Subclass</label>
+            <input type="text" id="char-subclass" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="e.g., Oath of Vengeance">
+        </div>
+        <div class="col-span-1 md:col-span-2">
+            <label for="char-deities" class="block text-sm font-medium text-gray-400">Deity/Deities</label>
+            <input type="text" id="char-deities" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="e.g., Bahamut">
+        </div>
+        <div>
+            <label for="char-place-of-birth" class="block text-sm font-medium text-gray-400">Place of Birth</label>
+            <input type="text" id="char-place-of-birth" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="e.g., The Silver City">
+        </div>
+        <div>
+            <label for="char-current-residence" class="block text-sm font-medium text-gray-400">Current Residence</label>
+            <input type="text" id="char-current-residence" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="e.g., The Dragon's Peak Inn">
+        </div>
+        <div>
+            <label for="char-future-plans" class="block text-sm font-medium text-gray-400">Future Plans/Destination</label>
+            <textarea id="char-future-plans" rows="3" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="What are their plans for the future?"></textarea>
+        </div>
+        <div>
+            <label for="char-appearance" class="block text-sm font-medium text-gray-400">Appearance</label>
+            <textarea id="char-appearance" rows="3" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="Describe their physical look..."></textarea>
+        </div>
+        <div>
+            <label for="char-personality" class="block text-sm font-medium text-gray-400">Personality</label>
+            <textarea id="char-personality" rows="3" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="Describe their core traits..."></textarea>
+        </div>
+        <div>
+            <label for="char-backstory" class="block text-sm font-medium text-gray-400">Backstory</label>
+            <textarea id="char-backstory" rows="3" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="Write their history and key life events..."></textarea>
+        </div>
+        <div>
+            <label for="char-goals" class="block text-sm font-medium text-gray-400">Goals & Conflict</label>
+            <textarea id="char-goals" rows="3" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="What do they want and what stands in their way?"></textarea>
+        </div>
+        <div class="col-span-1 md:col-span-2">
+            <h3 class="text-xl font-semibold text-gray-200 mb-2">Detailed Notes for the Writer</h3>
+            <p class="text-sm text-gray-400 mb-2">Use the dropdown to add a question, or type your own notes below.</p>
+            <div class="flex items-center gap-2 mb-2">
+                <select id="char-question-select" class="w-full rounded-md text-input-dark shadow-sm p-2 text-sm"></select>
+                <button type="button" id="add-question-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg btn-shadow hover:bg-blue-700 transition-colors">Add</button>
+            </div>
+            <textarea id="char-notes" rows="6" class="mt-1 block w-full rounded-md text-input-dark shadow-sm p-2" placeholder="Add notes, brainstorm answers to the questions, or create your own character questionnaire here."></textarea>
+        </div>
+
+        <div class="col-span-1 md:col-span-2 flex justify-end gap-2">
+            <button type="button" id="clear-form-btn" class="bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg btn-shadow hover:bg-gray-600 transition-colors">
+                Clear Form
+            </button>
+            <button type="button" id="save-character-btn" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg btn-shadow hover:bg-blue-700 transition-colors">
+                Save Character
+            </button>
+        </div>
+    </div>
+
+    <hr class="border-t border-gray-700">
+    
+    <!-- Search and Sort Controls -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="w-full sm:w-auto">
+            <label for="search-input" class="block text-sm font-medium text-gray-400 mb-1">Search Characters</label>
+            <input type="text" id="search-input" class="w-full sm:w-64 rounded-md text-input-dark shadow-sm p-2" placeholder="Search by name or keyword...">
+        </div>
+        <div class="flex items-center gap-4 w-full sm:w-auto mt-4 sm:mt-0">
+            <div class="flex-grow">
+                <label for="sort-by" class="block text-sm font-medium text-gray-400 mb-1">Sort By</label>
+                <select id="sort-by" class="w-full rounded-md text-input-dark shadow-sm p-2">
+                    <option value="name">Name</option>
+                    <option value="age">Age</option>
+                </select>
+            </div>
+            <div class="self-end">
+                <button id="sort-order-btn" class="bg-gray-700 text-white font-semibold p-2 rounded-md btn-shadow hover:bg-gray-600 transition-colors">
+                    <svg id="sort-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 4.5h15M3 9h9m-9 4.5h15M3 18h9m5.25-13.5l3.75 3.75L17.25 12l3.75-3.75-3.75-3.75z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Character List -->
+    <div>
+        <h2 class="text-2xl font-semibold text-gray-200 mb-4">Your Characters</h2>
+        <div id="character-list-container" class="character-grid-container">
+            <!-- Compact character cards will be dynamically inserted here -->
+        </div>
+    </div>
+    
+    <div id="action-buttons" class="flex flex-wrap gap-4 justify-center mt-8">
+        <button id="export-all-btn" class="bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg btn-shadow hover:bg-gray-600 transition-colors">
+            Export All Characters
+        </button>
+        <label for="import-file" class="bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg btn-shadow hover:bg-gray-600 transition-colors cursor-pointer">
+            Import Characters
+            <input type="file" id="import-file" accept=".json" class="hidden">
+        </label>
+    </div>
+
+    <!-- Custom Modal for user feedback -->
+    <div id="custom-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-darker rounded-lg p-6 max-w-sm w-full container-shadow text-center">
+            <h3 id="modal-title" class="text-xl font-bold mb-2 text-gray-100"></h3>
+            <p id="modal-message" class="text-gray-400 mb-4"></p>
+            <button id="modal-close-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Close</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Local storage key for character data
+    const CHARACTER_STORAGE_KEY = 'character_creator_data';
+
+    let allCharacters = [];
+    let sortBy = 'name';
+    let sortOrder = 'asc';
+    let expandedCharId = null;
+
+    // Get DOM elements
+    const characterForm = document.getElementById('character-form');
+    const characterListContainer = document.getElementById('character-list-container');
+    const exportAllBtn = document.getElementById('export-all-btn');
+    const importFileBtn = document.getElementById('import-file');
+    const customModal = document.getElementById('custom-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMessage = document.getElementById('modal-message');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const searchInput = document.getElementById('search-input');
+    const sortBySelect = document.getElementById('sort-by');
+    const sortOrderBtn = document.getElementById('sort-order-btn');
+    const sortIcon = document.getElementById('sort-icon');
+    const clearFormBtn = document.getElementById('clear-form-btn');
+    const saveCharacterBtn = document.getElementById('save-character-btn');
+    const questionSelect = document.getElementById('char-question-select');
+    const addQuestionBtn = document.getElementById('add-question-btn');
+    const notesTextarea = document.getElementById('char-notes');
+
+    // Function to show a custom modal
+    const showModal = (title, message) => {
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+        customModal.classList.remove('hidden');
+    };
+
+    // Function to handle modal closing
+    modalCloseBtn.addEventListener('click', () => {
+        customModal.classList.add('hidden');
+    });
+
+    // Load data from localStorage
+    const loadCharactersFromLocalStorage = () => {
+        try {
+            const data = localStorage.getItem(CHARACTER_STORAGE_KEY);
+            const parsedData = data ? JSON.parse(data) : [];
+            console.log('Loaded from localStorage:', parsedData);
+            return parsedData;
+        } catch (error) {
+            console.error("Error loading from localStorage:", error);
+            return [];
+        }
+    };
+
+    // Save data to localStorage
+    const saveCharactersToLocalStorage = (characters) => {
+        try {
+            console.log('Saving to localStorage:', characters);
+            localStorage.setItem(CHARACTER_STORAGE_KEY, JSON.stringify(characters));
+        } catch (error) {
+            console.error("Error saving to localStorage:", error);
+        }
+    };
+
+    // Function to filter and sort characters and then render them
+    const filterAndSortCharacters = () => {
+        let filteredChars = [...allCharacters];
+        const searchTerm = searchInput.value.toLowerCase();
+        
+        // Filter characters based on search input
+        if (searchTerm) {
+            filteredChars = filteredChars.filter(char =>
+                Object.values(char).some(val => 
+                    typeof val === 'string' && val.toLowerCase().includes(searchTerm)
+                )
+            );
+        }
+
+        // Sort characters
+        filteredChars.sort((a, b) => {
+            const valA = a[sortBy];
+            const valB = b[sortBy];
+
+            if (typeof valA === 'string' && typeof valB === 'string') {
+                return sortOrder === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+            } else {
+                return sortOrder === 'asc' ? (valA || 0) - (valB || 0) : (valB || 0) - (valA || 0);
+            }
+        });
+
+        renderCharacters(filteredChars);
+    };
+
+    // Renders character cards from a list
+    const renderCharacters = (characters) => {
+        characterListContainer.innerHTML = '';
+        
+        characters.forEach((char) => {
+            const charCard = createCharacterCard(char);
+            characterListContainer.appendChild(charCard);
+        });
+    };
+    
+    // Creates the detailed expanded view element
+    const createExpandedView = (data) => {
+        const expandedDiv = document.createElement('div');
+        expandedDiv.className = "bg-darker rounded-b-lg p-6 container-shadow transition-all duration-300 transform border-t border-gray-700";
+        
+        expandedDiv.innerHTML = `
+            <div class="space-y-4">
+                <div class="text-gray-400 text-sm space-y-2">
+                    <p><span class="font-semibold text-gray-200">Age:</span> ${data.age || 'N/A'}</p>
+                    <p><span class="font-semibold text-gray-200">Family Name:</span> ${data.familyName || 'N/A'}</p>
+                    <p><span class="font-semibold text-gray-200">Race:</span> ${data.race || 'N/A'}</p>
+                    <p><span class="font-semibold text-gray-200">Subrace:</span> ${data.subrace || 'N/A'}</p>
+                    <p><span class="font-semibold text-gray-200">Class:</span> ${data.class || 'N/A'}</p>
+                    <p><span class="font-semibold text-gray-200">Subclass:</span> ${data.subclass || 'N/A'}</p>
+                    <p><span class="font-semibold text-gray-200">Deity:</span> ${data.deities || 'N/A'}</p>
+                    <p><span class="font-semibold text-gray-200">Occupation:</span> ${data.occupation || 'N/A'}</p>
+                    <p><span class="font-semibold text-gray-200">Birthplace:</span> ${data.placeOfBirth || 'N/A'}</p>
+                    <p><span class="font-semibold text-gray-200">Current Residence:</span> ${data.currentResidence || 'N/A'}</p>
+                    <p><span class="font-semibold text-gray-200">Future Plans:</span> ${data.futurePlans || 'N/A'}</p>
+                </div>
+                <div class="mt-4 text-gray-400 text-sm space-y-2">
+                    <p class="font-semibold text-gray-200">Appearance:</p>
+                    <p class="card-text-container">${data.appearance || 'N/A'}</p>
+                    <p class="font-semibold text-gray-200">Personality:</p>
+                    <p class="card-text-container">${data.personality || 'N/A'}</p>
+                    <p class="font-semibold text-gray-200">Backstory:</p>
+                    <p class="card-text-container">${data.backstory || 'N/A'}</p>
+                    <p class="font-semibold text-gray-200">Goals:</p>
+                    <p class="card-text-container">${data.goals || 'N/A'}</p>
+                    <p class="font-semibold text-gray-200">Notes:</p>
+                    <p class="card-text-container">${data.notes || 'N/A'}</p>
+                </div>
+            </div>
+        `;
+
+        return expandedDiv;
+    };
+
+
+    // Creates a compact card element for a character
+    const createCharacterCard = (data) => {
+        const isExpanded = expandedCharId === data.id;
+        const cardWrapper = document.createElement('div');
+        cardWrapper.className = "character-card-wrapper";
+
+        const card = document.createElement('div');
+        card.dataset.id = data.id;
+        card.className = "bg-darker rounded-lg btn-shadow transition-all duration-300 flex flex-col";
+        
+        // Header (clickable part)
+        const header = document.createElement('div');
+        header.className = "p-4 cursor-pointer flex items-center justify-between";
+        header.innerHTML = `
+            <h3 class="text-xl font-bold text-gray-200">${data.name || 'Unnamed Character'}</h3>
+            <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : 'rotate-0'}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        `;
+        header.addEventListener('click', () => {
+            if (expandedCharId === data.id) {
+                expandedCharId = null;
+            } else {
+                expandedCharId = data.id;
+            }
+            filterAndSortCharacters();
+        });
+        card.appendChild(header);
+
+        // Expanded view (hidden by default)
+        const expandedView = createExpandedView(data);
+        expandedView.className += " " + (isExpanded ? "block" : "hidden");
+        card.appendChild(expandedView);
+
+        // Buttons at the bottom
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = "p-4 border-t border-gray-700 flex flex-wrap gap-2 justify-end";
+        buttonsContainer.innerHTML = `
+            <button data-id="${data.id}" data-action="edit" class="bg-yellow-600 text-white font-semibold text-xs py-1 px-3 rounded-md btn-shadow hover:bg-yellow-700 transition-colors">Edit</button>
+            <button data-id="${data.id}" data-action="delete" class="bg-red-600 text-white font-semibold text-xs py-1 px-3 rounded-md btn-shadow hover:bg-red-700 transition-colors">Delete</button>
+            <button data-id="${data.id}" data-action="export-single" class="bg-gray-600 text-white font-semibold text-xs py-1 px-3 rounded-md btn-shadow hover:bg-gray-700 transition-colors">Export</button>
+        `;
+        card.appendChild(buttonsContainer);
+
+        cardWrapper.appendChild(card);
+        return cardWrapper;
+    };
+
+    // Event listeners for search and sort controls
+    searchInput.addEventListener('input', filterAndSortCharacters);
+    sortBySelect.addEventListener('change', (e) => {
+        sortBy = e.target.value;
+        filterAndSortCharacters();
+    });
+    sortOrderBtn.addEventListener('click', () => {
+        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+        sortIcon.innerHTML = sortOrder === 'asc' 
+            ? '<path d="M3 4.5h15M3 9h9m-9 4.5h15M3 18h9m5.25-13.5l3.75 3.75L17.25 12l3.75-3.75-3.75-3.75z"></path>'
+            : '<path d="M3 4.5h15M3 9h9m-9 4.5h15M3 18h9m5.25 1.5L20.25 15l-3.75-3.75-3.75 3.75 3.75 3.75z"></path>';
+        filterAndSortCharacters();
+    });
+    
+    // Function to clear the form
+    const clearForm = () => {
+        characterForm.reset();
+        delete characterForm.dataset.editingId;
+    };
+    clearFormBtn.addEventListener('click', clearForm);
+
+    // List of character development questions
+    const characterQuestions = [
+        "What is their full name, and what does it mean?",
+        "Do they have any nicknames, and what's the story behind them?",
+        "How old are they, and how do they feel about their age?",
+        "What is their occupation or role in society?",
+        "What is their financial status? Are they rich, poor, or somewhere in between?",
+        "What is their social class?",
+        "What is their height, weight, and body type?",
+        "Do they have any distinguishing physical features, such as scars, tattoos, or birthmarks?",
+        "What is their typical posture and manner of walking?",
+        "How do they dress, and what does their style say about them?",
+        "What is their voice like? Is it high-pitched, gravelly, soft, or loud?",
+        "Do they have any particular mannerisms or tics?",
+        "What are their three best traits and three worst traits?",
+        "Are they an introvert or an extrovert?",
+        "What is their biggest fear, and why do they have it?",
+        "What is their greatest secret?",
+        "What is their moral alignment (e.g., are they honest, deceitful, compassionate, or cruel)?",
+        "What is their biggest regret?",
+        "What was their childhood like? Was it happy, traumatic, or lonely?",
+        "Describe their family life. What is their relationship with their parents and siblings?",
+        "What was their first job, and what did they learn from it?",
+        "Who is the most important person in their life, and why?",
+        "Have they ever experienced a significant loss? How did it change them?",
+        "What is their short-term goal in the story?",
+        "What is their long-term goal or ultimate ambition?",
+        "What is the primary internal conflict they are facing?",
+        "What is the primary external conflict they are facing?",
+        "What are they willing to sacrifice to achieve their goal?",
+        "What is their favorite food, and what's a food they can't stand?",
+        "What is their favorite season, and why?",
+        "What is their favorite way to spend a day off?",
+        "Are they a morning person or a night owl?",
+        "What is their biggest pet peeve?",
+        "What is their most treasured possession?",
+        "If they could have any superpower, what would it be?",
+        "What animal do they most resemble?",
+        "What's a lie they've told that they regret?",
+        "What do they do when they're stressed or angry?",
+        "How do they respond to failure?",
+        "What's the one thing they would change about themselves?",
+        "What is their philosophy of life?",
+        "What's an irrational belief they hold?",
+        "Do they have a spiritual or religious side?",
+        "What is a common misconception people have about them?",
+        "How do they want to be remembered after they're gone?",
+        "If they had a catchphrase, what would it be?",
+        "What would they tell their younger self?",
+        "How do they act when they're alone?",
+        "What is their biggest hypocrisy?",
+        "What is a small detail about them that no one else knows?",
+        "What is their biggest secret?",
+        "What is something they're ashamed of?",
+        "What is something that makes them feel truly happy?",
+        "What's their relationship with technology?",
+        "What would they do if they won the lottery?",
+        "Do they have a phobia? If so, what is it and why?",
+        "What is their biggest flaw, and how does it affect their relationships with others?",
+        "How do they handle criticism?",
+        "What's their biggest strength, and how does it manifest in the story?",
+        "What's their biggest vulnerability?",
+        "Do they have any hidden talents?",
+        "What is the one thing they've always wanted to do but have never had the chance?",
+        "What do they want most in the world?",
+        "What do they fear losing most?"
+    ];
+
+    // Populate the dropdown with questions
+    characterQuestions.forEach(q => {
+        const option = document.createElement('option');
+        option.value = q;
+        option.textContent = q;
+        questionSelect.appendChild(option);
+    });
+    
+    // Add selected question to the notes field
+    addQuestionBtn.addEventListener('click', () => {
+        const selectedQuestion = questionSelect.value;
+        if (selectedQuestion) {
+            notesTextarea.value += `- ${selectedQuestion}\n\n`;
+        }
+    });
+
+    // Event listener for form submission (adding/editing a character)
+    const saveCharacter = () => {
+        const name = document.getElementById('char-name').value;
+        if (!name) {
+            showModal("Error", "Character name is required.");
+            return;
+        }
+
+        const characterData = {
+            id: characterForm.dataset.editingId || Date.now().toString(),
+            name,
+            familyName: document.getElementById('char-family-name').value,
+            age: parseInt(document.getElementById('char-age').value) || null,
+            occupation: document.getElementById('char-occupation').value,
+            race: document.getElementById('char-race').value,
+            subrace: document.getElementById('char-subrace').value,
+            class: document.getElementById('char-class').value,
+            subclass: document.getElementById('char-subclass').value,
+            deities: document.getElementById('char-deities').value,
+            placeOfBirth: document.getElementById('char-place-of-birth').value,
+            currentResidence: document.getElementById('char-current-residence').value,
+            futurePlans: document.getElementById('char-future-plans').value,
+            appearance: document.getElementById('char-appearance').value,
+            personality: document.getElementById('char-personality').value,
+            backstory: document.getElementById('char-backstory').value,
+            goals: document.getElementById('char-goals').value,
+            notes: document.getElementById('char-notes').value,
+        };
+
+        if (characterForm.dataset.editingId) {
+            allCharacters = allCharacters.map(char => 
+                char.id === characterData.id ? characterData : char
+            );
+            showModal("Success", "Character updated successfully!");
+        } else {
+            allCharacters.push(characterData);
+            showModal("Success", "Character added successfully!");
+        }
+        
+        saveCharactersToLocalStorage(allCharacters);
+        // Re-load all characters to ensure the UI is in sync with localStorage
+        allCharacters = loadCharactersFromLocalStorage();
+        clearForm();
+        filterAndSortCharacters();
+    };
+    saveCharacterBtn.addEventListener('click', saveCharacter);
+    
+    // Event listener for edit, delete, and single export buttons
+    characterListContainer.addEventListener('click', (e) => {
+        const target = e.target;
+        const action = target.dataset.action;
+        const characterId = target.dataset.id;
+
+        if (!action || !characterId) return;
+
+        if (action === 'delete') {
+            allCharacters = allCharacters.filter(char => char.id !== characterId);
+            saveCharactersToLocalStorage(allCharacters);
+            filterAndSortCharacters();
+            showModal("Deleted", "Character successfully deleted!");
+        } else if (action === 'edit') {
+            const charToEdit = allCharacters.find(char => char.id === characterId);
+            if (charToEdit) {
+                document.getElementById('char-name').value = charToEdit.name || '';
+                document.getElementById('char-family-name').value = charToEdit.familyName || '';
+                document.getElementById('char-age').value = charToEdit.age || '';
+                document.getElementById('char-occupation').value = charToEdit.occupation || '';
+                document.getElementById('char-race').value = charToEdit.race || '';
+                document.getElementById('char-subrace').value = charToEdit.subrace || '';
+                document.getElementById('char-class').value = charToEdit.class || '';
+                document.getElementById('char-subclass').value = charToEdit.subclass || '';
+                document.getElementById('char-deities').value = charToEdit.deities || '';
+                document.getElementById('char-place-of-birth').value = charToEdit.placeOfBirth || '';
+                document.getElementById('char-current-residence').value = charToEdit.currentResidence || '';
+                document.getElementById('char-future-plans').value = charToEdit.futurePlans || '';
+                document.getElementById('char-appearance').value = charToEdit.appearance || '';
+                document.getElementById('char-personality').value = charToEdit.personality || '';
+                document.getElementById('char-backstory').value = charToEdit.backstory || '';
+                document.getElementById('char-goals').value = charToEdit.goals || '';
+                document.getElementById('char-notes').value = charToEdit.notes || '';
+                
+                characterForm.dataset.editingId = characterId;
+                showModal("Editing", "Character data loaded for editing.");
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        } else if (action === 'export-single') {
+            const charToExport = allCharacters.find(char => char.id === characterId);
+            if (charToExport) {
+                const dataStr = JSON.stringify(charToExport, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${charToExport.name || 'character'}_${new Date().toISOString().slice(0, 10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showModal("Export Complete", `Character '${charToExport.name || 'Unnamed'}' exported successfully!`);
+            } else {
+                showModal("Export Failed", "Character not found.");
+            }
+        }
+    });
+
+    // Export all functionality
+    exportAllBtn.addEventListener('click', () => {
+        const dataStr = JSON.stringify(allCharacters, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `character_data_${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showModal("Export Complete", "Your character data has been exported to a JSON file.");
+    });
+
+    // Import functionality
+    importFileBtn.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const importedData = JSON.parse(event.target.result);
+                if (!Array.isArray(importedData)) {
+                    allCharacters.push({ id: Date.now().toString(), ...importedData });
+                } else {
+                    importedData.forEach(char => {
+                         allCharacters.push({ id: Date.now().toString(), ...char });
+                    });
+                }
+                saveCharactersToLocalStorage(allCharacters);
+                filterAndSortCharacters();
+                showModal("Import Complete", `${importedData.length || 1} character(s) successfully imported!`);
+            } catch (error) {
+                console.error("Error during import:", error);
+                showModal("Import Failed", "The file could not be imported. Please ensure it's a valid JSON file.");
+            }
+            e.target.value = ''; // Reset the file input
+        };
+        reader.readAsText(file);
+    });
+
+    // Initial load
+    window.onload = () => {
+        allCharacters = loadCharactersFromLocalStorage();
+        console.log('Initial characters loaded:', allCharacters);
+        filterAndSortCharacters();
+    };
+
+</script>
+</body>
+</html>
