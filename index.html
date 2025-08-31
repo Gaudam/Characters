@@ -411,7 +411,23 @@
     
     // Function to clear the form
     const clearForm = () => {
-        characterForm.reset();
+        document.getElementById('char-name').value = '';
+        document.getElementById('char-family-name').value = '';
+        document.getElementById('char-age').value = '';
+        document.getElementById('char-occupation').value = '';
+        document.getElementById('char-race').value = '';
+        document.getElementById('char-subrace').value = '';
+        document.getElementById('char-class').value = '';
+        document.getElementById('char-subclass').value = '';
+        document.getElementById('char-deities').value = '';
+        document.getElementById('char-place-of-birth').value = '';
+        document.getElementById('char-current-residence').value = '';
+        document.getElementById('char-future-plans').value = '';
+        document.getElementById('char-appearance').value = '';
+        document.getElementById('char-personality').value = '';
+        document.getElementById('char-backstory').value = '';
+        document.getElementById('char-goals').value = '';
+        document.getElementById('char-notes').value = '';
         delete characterForm.dataset.editingId;
     };
     clearFormBtn.addEventListener('click', clearForm);
@@ -507,9 +523,9 @@
             showModal("Error", "Character name is required.");
             return;
         }
-
+        
         const characterData = {
-            id: characterForm.dataset.editingId || Date.now().toString(),
+            id: characterForm.dataset.editingId || crypto.randomUUID(),
             name,
             familyName: document.getElementById('char-family-name').value,
             age: parseInt(document.getElementById('char-age').value) || null,
@@ -530,20 +546,20 @@
         };
 
         if (characterForm.dataset.editingId) {
-            allCharacters = allCharacters.map(char => 
-                char.id === characterData.id ? characterData : char
-            );
-            showModal("Success", "Character updated successfully!");
+            // Find and replace the character being edited
+            const index = allCharacters.findIndex(char => char.id === characterData.id);
+            if (index !== -1) {
+                allCharacters[index] = characterData;
+            }
         } else {
+            // Add a new character
             allCharacters.push(characterData);
-            showModal("Success", "Character added successfully!");
         }
         
         saveCharactersToLocalStorage(allCharacters);
-        // Re-load all characters to ensure the UI is in sync with localStorage
-        allCharacters = loadCharactersFromLocalStorage();
         clearForm();
         filterAndSortCharacters();
+        showModal("Success", `Character "${characterData.name}" has been saved successfully!`);
     };
     saveCharacterBtn.addEventListener('click', saveCharacter);
     
@@ -631,16 +647,20 @@
         reader.onload = (event) => {
             try {
                 const importedData = JSON.parse(event.target.result);
-                if (!Array.isArray(importedData)) {
-                    allCharacters.push({ id: Date.now().toString(), ...importedData });
-                } else {
-                    importedData.forEach(char => {
-                         allCharacters.push({ id: Date.now().toString(), ...char });
-                    });
-                }
+                const newCharacters = Array.isArray(importedData) ? importedData : [importedData];
+
+                newCharacters.forEach(char => {
+                    const existingChar = allCharacters.find(c => c.id === char.id);
+                    if (existingChar) {
+                        Object.assign(existingChar, char);
+                    } else {
+                        allCharacters.push({ ...char, id: char.id || crypto.randomUUID() });
+                    }
+                });
+                
                 saveCharactersToLocalStorage(allCharacters);
                 filterAndSortCharacters();
-                showModal("Import Complete", `${importedData.length || 1} character(s) successfully imported!`);
+                showModal("Import Complete", `${newCharacters.length} character(s) successfully imported!`);
             } catch (error) {
                 console.error("Error during import:", error);
                 showModal("Import Failed", "The file could not be imported. Please ensure it's a valid JSON file.");
@@ -651,11 +671,11 @@
     });
 
     // Initial load
-    window.onload = () => {
+    document.addEventListener('DOMContentLoaded', () => {
         allCharacters = loadCharactersFromLocalStorage();
         console.log('Initial characters loaded:', allCharacters);
         filterAndSortCharacters();
-    };
+    });
 
 </script>
 </body>
